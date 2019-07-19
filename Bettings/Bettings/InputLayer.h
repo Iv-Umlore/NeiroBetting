@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Layer.h"
-
+// ¬ходной класс, не содержит нейроном, нужен дл€ передачи данных на следующие слои
 class InputLayer : public Layer {
 public:
 

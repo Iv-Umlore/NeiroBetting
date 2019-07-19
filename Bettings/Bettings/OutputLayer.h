@@ -9,21 +9,27 @@ class OutputLayer : public Layer {
 private:
 	Neiron** neirons;
 	int neironsSize;
-	string way = "D:\\PROGRAMS\\MyNeiron\\Bettings\\Debug\\output_weight.txt";
+	string way = "D:\\PROGRAMS\\NeiroBetting\\Bettings\\Debug\\output_weight.txt";
+	int _LastLevelSize;
 public:
 
 	OutputLayer(int levelsize) {
 		neironsSize = 2;
+		_LastLevelSize = levelsize;
+		ReadWeights();
+	}
+
+	void ReadWeights() {
 		neirons = new Neiron*[neironsSize];
 		std::ifstream in(way);
 		vector<double> weights;
 		double tmp;
 		for (int j = 0; j < neironsSize; j++) {
-			for (int i = 0; i < levelsize; i++) {
+			for (int i = 0; i < _LastLevelSize; i++) {
 				in >> tmp;
 				weights.push_back(tmp);
 			}
-			
+
 			neirons[j] = new Neiron(weights);
 			weights.clear();
 		}
@@ -31,6 +37,7 @@ public:
 	}
 
 	vector<double> Lerning(vector<double> changes) {
+		ReadWeights();
 		vector<vector<double> > tmp;
 		for (int i = 0; i < neironsSize; i++)
 			tmp.push_back(neirons[i]->Lerning(changes[i]));
@@ -49,7 +56,7 @@ public:
 		ofstream out(way);
 		vector<double> tmp;
 		for (int i = 0; i < neironsSize; i++) {			
-			tmp = neirons[i]->GetNewWeight();
+			tmp = neirons[i]->GetWeight();
 			for (int j = 0; j < tmp.size(); j++)
 				if (j+1 < tmp.size())
 					out << tmp[j] << " ";

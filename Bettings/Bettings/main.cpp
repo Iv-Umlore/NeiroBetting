@@ -15,7 +15,7 @@ int main() {
 	Network NW;
 	string way;
 	if (answer == 'S') {
-		way = "D:\\PROGRAMS\\MyNeiron\\Bettings\\tests.txt";
+		way = "D:\\PROGRAMS\\NeiroBetting\\Bettings\\USA_USL_ChampShip.txt";
 		ifstream in(way);
 		int count;
 		int balls1, balls2;
@@ -27,17 +27,15 @@ int main() {
 			matches[i].SetMatchResult(balls1, balls2);
 		}
 		for (int i = 0; i < count; i++)
-			NW.VangaLerning(matches[i].lastResults, matches[i].CorrectResult);
+			NW.VangaLerning(matches[i].lastResults, matches[i].CorrectResult);	// учим
 	}
 	else if (answer == 'P') {
-		way = "D:\\PROGRAMS\\MyNeiron\\Bettings\\results.txt";
+		way = "D:\\PROGRAMS\\NeiroBetting\\Bettings\\results.txt";
 		ifstream in(way);
 		Match testMatch(in);
-		NW.Vanga(testMatch.lastResults);
+		NW.Vanga(testMatch.lastResults);		// просим результат
 	}
 	else cout << "Sorry, u write full trash!" << endl;	
-	
-	
 	
 	
 	system("pause");

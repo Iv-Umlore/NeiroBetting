@@ -10,29 +10,38 @@ private:
 	Neiron** neirons;
 	int neironsSize;
 	string _way;
+	int _LastLevelSize;
+	bool ISspesical;
 public:
 
 	HiddenLayer(int levelsize ,string way, bool spesialHL = false) {
 		neironsSize = 4;
 		_way = way;
+		_LastLevelSize = levelsize;
+		ISspesical = spesialHL;
+		ReadWeights();		// считать веса
+	}
+	// считать веса, из файлика считывает текущие рабочие веса 
+	void ReadWeights() {
 		neirons = new Neiron*[neironsSize];
-		std::ifstream in(way);
+		std::ifstream in(_way);
 		vector<double> weights;
 		double tmp;
 		for (int j = 0; j < neironsSize; j++) {
-			for (int i = 0; i < levelsize; i++) {
+			for (int i = 0; i < _LastLevelSize; i++) {
 				in >> tmp;
 				weights.push_back(tmp);
 			}
-			if (spesialHL && j > 1)
-					neirons[j] = new Neiron(weights,special);
-				else neirons[j] = new Neiron(weights);
+			if (ISspesical && j > 1)
+				neirons[j] = new Neiron(weights, special);
+			else neirons[j] = new Neiron(weights);
 			weights.clear();
 		}
 		in.close();
 	}
 
 	vector<double> Lerning(vector<double> changes) {
+		ReadWeights();
 		vector<vector<double> > tmp;
 		for (int i = 0; i < neironsSize; i++)
 			tmp.push_back(neirons[i]->Lerning(changes[i]));
@@ -51,7 +60,7 @@ public:
 		ofstream out(_way);
 		vector<double> tmp;
 		for (int i = 0; i < neironsSize; i++) {
-			tmp = neirons[i]->GetNewWeight();
+			tmp = neirons[i]->GetWeight();
 			for (int j = 0; j < tmp.size(); j++)
 				if (j + 1 < tmp.size())
 					out << tmp[j] << " ";

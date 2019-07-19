@@ -25,7 +25,7 @@ public:
 		_weight = weight;
 		NT = type;
 	}
-
+	// Функция активации (рабочий механизм)
 	double ActivationFunction(vector<double> value) {
 		double result = 0.0;
 		if (NT == classic) {
@@ -54,18 +54,20 @@ public:
 			return result;
 		}
 	}
-
+	// Обучение, необходима доработка
 	vector<double> Lerning(double error) {
 		vector<double> res;
 		for (int i = 0; i < _weight.size(); i++) {
-			_weight[i] += _weight[i] * error;
-			res.push_back(error / _weight[i]);
+			_weight[i] += _weight[i] * error;		// увеличиваем вес на процент от него самого
+			if (_weight[i] > 5.0) _weight[i] = 5.0;
+			if (_weight[i] < -5.0) _weight[i] = -5.0;
+			res.push_back(error / _weight[i]);		// возвращаем серьёзность изменения
 		}
 			
 		return res;
 	};
 
-	vector<double> GetNewWeight() {
+	vector<double> GetWeight() {
 		return _weight;
 	}
 

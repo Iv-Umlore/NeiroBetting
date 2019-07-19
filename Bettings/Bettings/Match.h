@@ -25,11 +25,11 @@ double GetMatchRate(int balls1, int balls2) {
 
 	return startResult;
 }
-
+// Представляет собой матч. Содержит результаты 5 предыдущих игр обеих команд.
 class Match {
 public:
 	vector<double> lastResults;
-	double CorrectResult;
+	double CorrectResult;		// доп.параметр, необходим при тестировании
 	Match() {};
 	Match(ifstream & in) {
 		int firstball, secondball;
