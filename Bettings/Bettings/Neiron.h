@@ -3,6 +3,7 @@
 #include <vector>
 #include <string>
 #include <algorithm>
+#include <iostream>
 
 using namespace std;
 
@@ -58,10 +59,10 @@ public:
 	vector<double> Lerning(double error) {
 		vector<double> res;
 		for (int i = 0; i < _weight.size(); i++) {
+			res.push_back(error / _weight[i]);
 			_weight[i] += _weight[i] * error;		// увеличиваем вес на процент от него самого
-			if (_weight[i] > 5.0) _weight[i] = 5.0;
-			if (_weight[i] < -5.0) _weight[i] = -5.0;
-			res.push_back(error / _weight[i]);		// возвращаем серьёзность изменения
+			if (_weight[i] > 5.0) _weight[i] = 4.8;
+			if (_weight[i] < -5.0) _weight[i] = -4.8;	
 		}
 			
 		return res;

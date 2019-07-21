@@ -16,6 +16,9 @@ private:
 	HiddenLayer** HL;	// Массив внутренних слоёв
 	vector<double> someRes;
 public:
+
+	int numberofErrors;
+
 	Network() {
 		IL = new InputLayer();
 		HL = new HiddenLayer*[2];
@@ -24,6 +27,7 @@ public:
 		way = "D:\\PROGRAMS\\NeiroBetting\\Bettings\\Debug\\second_weight.txt";
 		HL[1] = new HiddenLayer(4, way);
 		OL = new OutputLayer(4);
+		numberofErrors = 0;
 	}
 	// Подсчёт результатов
 	void Vanga(vector<double> LastMatchResults) {
@@ -46,36 +50,35 @@ public:
 	}
 
 	// Умножение вектора на число со звёздочкой
-	void multiplication(vector<double> & tmp, double mult) {
+	void ChangeWeights(vector<double> & tmp, double mult) {
 		double summ = 0;
 		for (int i = 0; i < tmp.size(); i++)
 			summ += tmp[i];	// звёздочка, умножение идёт пропорционально
 		for (int i = 0; i < tmp.size(); i++) {
-			tmp[i] = tmp[i] * (tmp[i] / summ) * mult;
+			tmp[i] = (tmp[i] / summ) * mult;			// считаю
 		}
 	}
 	// Обучение.
-	void VangaLerning(vector<double> test, double correctValue) {
+	void VangaLerning(vector<double> test, double correctValue, double learningspeed = 0.01) {
 		cout << endl << "Good Result: " << correctValue << endl;
 		Vanga(test);	// Прогоняем тест
-		double learningspeed = 0.2;
 		double Error = someRes[0] - correctValue;		// считаем ошибку
 		
-		if (Error > 0.1 || Error < -0.1) {
+		if (Error > 0.05 || Error < -0.05) {
 			vector<double> change;
 			change.push_back(-learningspeed * Error);			// ???
 			change.push_back(-learningspeed * Error);			// ???
 			change = OL->Lerning(change);				// Выполняем обучение
-			multiplication(change, -learningspeed * Error);
+			//ChangeWeights(change, -learningspeed * Error);
 			change = HL[1]->Lerning(change);			// Выполняем обучение
-			multiplication(change, -learningspeed * Error);
+			//ChangeWeights(change, -learningspeed * Error);
 			change = HL[0]->Lerning(change);			// Выполняем обучение
 
 			Vanga(test);							// прогоняем ещё раз, проверяем, уменьшилась ли ошибка
-
+			if (someRes[0] - correctValue < 0.3 && someRes[0] - correctValue > -0.3) numberofErrors++;
 			if (Error > 0) {
 				if (someRes[0] - correctValue < Error) {
-					cout << "Change weight" << endl;
+					//cout << "Change weight" << endl;
 					OL->SaveWeights();
 					HL[0]->SaveWeights();
 					HL[1]->SaveWeights();
@@ -83,12 +86,16 @@ public:
 			}
 			else 
 				if (someRes[0] - correctValue > Error) {
-					cout << "Change weight" << endl;
+					//cout << "Change weight" << endl;
 					OL->SaveWeights();
 					HL[0]->SaveWeights();
 					HL[1]->SaveWeights();
 				}
 		}
+	}
+
+	double GetPrediction() {
+		return someRes[0];
 	}
 
 	~Network() {

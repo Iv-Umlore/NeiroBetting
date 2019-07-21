@@ -3,9 +3,9 @@
 #include <fstream>
 
 double GetMatchRate(int balls1, int balls2) {
-	double startValue = 1;	// попытка сделать мат.последовательность с пределом 0,5
-	double startResult = 0.5;	// Ну или почти 0,5
-	int denominator = 8;		// На это число делится startValue
+	double startValue = 0.91;	// попытка сделать мат.последовательность с пределом 0,5
+	double startResult = 0;	// Ну или почти 0,5
+	int denominator = 5;		// На это число делится startValue
 
 	if (balls1 == balls2) {
 		startResult += 0.02 * (balls1 + 0.5);
@@ -25,6 +25,25 @@ double GetMatchRate(int balls1, int balls2) {
 
 	return startResult;
 }
+
+void PrintMatchPrediction(double answer) {
+	int ball1 = 0, ball2 = 0;
+	double min = 1.0;
+	double tmp;
+	for (int i = 0; i < 10; i++)
+		for (int j = 0; j < 10; j++) {
+			tmp = GetMatchRate(i, j);
+			tmp = answer - tmp;
+			if (tmp < 0) tmp *= -1;
+			if (tmp < min) {
+				min = tmp;
+				ball1 = i;
+				ball2 = j;
+			}
+		}
+	cout << "I think, that score will be : " << ball1 << " : " << ball2 << endl;
+}
+
 // Представляет собой матч. Содержит результаты 5 предыдущих игр обеих команд.
 class Match {
 public:
