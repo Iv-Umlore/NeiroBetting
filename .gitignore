@@ -48,3 +48,5 @@ Bettings/\.vs/Bettings/v15/\.suo
 *.pdb
 
 *.ilk
+
+*.ipch
