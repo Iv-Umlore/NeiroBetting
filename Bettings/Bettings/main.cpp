@@ -64,7 +64,7 @@ int main() {
 		double learningspeed = 1;
 		cout << "Tests count = " << matches.size() << endl;
 		//for (int OMG = 0; OMG < 10; OMG++) {
-			for (int k = 0; k < 10; k++) {
+			//for (int k = 0; k < 10; k++) {
 				for (int j = 0; j < 100; j++)
 					for (int i = 0; i < matches.size(); i++)
 						NW.VangaLerning(matches[i].lastResults, matches[i].CorrectResult, learningspeed);	// учим
