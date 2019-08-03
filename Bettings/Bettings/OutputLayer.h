@@ -20,6 +20,7 @@ public:
 	}
 
 	void ReadWeights() {
+		if (neirons != nullptr) delete[] neirons;
 		neirons = new Neiron*[neironsSize];
 		std::ifstream in(way);
 		vector<double> weights;
@@ -36,20 +37,10 @@ public:
 		in.close();
 	}
 
-	vector<double> Lerning(vector<double> changes) {
+	vector<double> Lerning(double changes) {
 		ReadWeights();
-		vector<vector<double> > tmp;
-		for (int i = 0; i < neironsSize; i++)
-			tmp.push_back(neirons[i]->Lerning(changes[i]));
-		vector<double> res;
-		res = tmp[0];
-		for (int i = 1; i < tmp.size(); i++) {
-			for (int j = 0; j < res.size(); j++)
-				res[j] = res[j] + tmp[i][j];
-		}
-		for (int j = 0; j < res.size(); j++)
-			res[j] = res[j]/tmp.size();		// находим среднее весов
-		return res;
+		//cout << "\n From OL\n" << changes ;
+		return neirons[0]->Lerning(changes);
 	}
 	
 	void SaveWeights() {

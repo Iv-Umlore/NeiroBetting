@@ -8,8 +8,7 @@ double GetMatchRate(int balls1, int balls2) {
 	int denominator = 5;		// На это число делится startValue
 
 	if (balls1 == balls2) {
-		startResult += 0.02 * (balls1 + 0.5);
-		return startResult;
+		return (GetMatchRate(balls1, balls2 - 1) + GetMatchRate(balls1, balls2 + 1)) / 2;
 	}
 	while (balls1 > 0 || balls2 > 0) {
 		if (balls1 > 0) {

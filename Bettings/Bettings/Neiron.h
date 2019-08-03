@@ -10,7 +10,7 @@ using namespace std;
 enum NeironType {classic, special};
 
 void PrintVector(vector<double> vect, string from) {
-	cout << endl <<from << ":\n";
+	cout << endl << from << ":\n";
 	for (int i = 0; i < vect.size(); i++)
 		cout << vect[i] << " ";
 	if (vect.size() == 0) cout << "is empty";
@@ -58,13 +58,19 @@ public:
 	// Обучение, необходима доработка
 	vector<double> Lerning(double error) {
 		vector<double> res;
-		for (int i = 0; i < _weight.size(); i++) {
+		//cout << "\nValue: " << error << endl;
+		//PrintVector(_weight, "begin Neiron");
+		for (int i = 0; i < _weight.size(); i++) {	
 			res.push_back(error / _weight[i]);
-			_weight[i] += _weight[i] * error;		// увеличиваем вес на процент от него самого
+			if (_weight[i] * _weight[i] < 0.000025 && _weight[i] * error > 0) _weight[i] = -_weight[i];
+			else
+				if (_weight[i] < 0)
+					_weight[i] -= _weight[i] * (error/2);
+				else _weight[i] += _weight[i] * (error / 2);
 			if (_weight[i] > 5.0) _weight[i] = 4.8;
 			if (_weight[i] < -5.0) _weight[i] = -4.8;	
 		}
-			
+		//PrintVector(_weight, "end Neiron");
 		return res;
 	};
 

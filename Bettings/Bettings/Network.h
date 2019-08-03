@@ -16,7 +16,7 @@ private:
 	HiddenLayer** HL;	// Массив внутренних слоёв
 	vector<double> someRes;
 public:
-
+	int goodValue;
 	int numberofErrors;
 
 	Network() {
@@ -28,6 +28,7 @@ public:
 		HL[1] = new HiddenLayer(4, way);
 		OL = new OutputLayer(4);
 		numberofErrors = 0;
+		goodValue = 0;
 	}
 	// Подсчёт результатов
 	void Vanga(vector<double> LastMatchResults) {
@@ -46,7 +47,7 @@ public:
 		
 		someRes = OL->GetResultVector(someRes);
 
-		ShowResult(someRes);
+		//ShowResult(someRes);
 	}
 
 	// Умножение вектора на число со звёздочкой
@@ -60,24 +61,24 @@ public:
 	}
 	// Обучение.
 	void VangaLerning(vector<double> test, double correctValue, double learningspeed = 0.01) {
-		cout << endl << "Good Result: " << correctValue << endl;
+		//cout << endl << "Good Result: " << correctValue << endl;
 		Vanga(test);	// Прогоняем тест
-		double Error = someRes[0] - correctValue;		// считаем ошибку
-		
+		double Error = correctValue - someRes[0];
+		double change;
+		//cout << "This Error: " << Error << endl;
 		if (Error > 0.05 || Error < -0.05) {
-			vector<double> change;
-			change.push_back(-learningspeed * Error);			// ???
-			change.push_back(-learningspeed * Error);			// ???
-			change = OL->Lerning(change);				// Выполняем обучение
+			change = Error * learningspeed;
+			vector<double> tmp = OL->Lerning(change);				// Выполняем обучение
 			//ChangeWeights(change, -learningspeed * Error);
-			change = HL[1]->Lerning(change);			// Выполняем обучение
+			tmp = HL[1]->Lerning(tmp);			// Выполняем обучение
 			//ChangeWeights(change, -learningspeed * Error);
-			change = HL[0]->Lerning(change);			// Выполняем обучение
+			tmp = HL[0]->Lerning(tmp);			// Выполняем обучение
 
 			Vanga(test);							// прогоняем ещё раз, проверяем, уменьшилась ли ошибка
-			if (someRes[0] - correctValue < 0.3 && someRes[0] - correctValue > -0.3) numberofErrors++;
+			if (correctValue - someRes[0] < 0.3 && correctValue - someRes[0] > -0.3) numberofErrors++;
+			if (someRes[0] < 1 && someRes[0] > -1) goodValue++;
 			if (Error > 0) {
-				if (someRes[0] - correctValue < Error) {
+				if (correctValue - someRes[0] < Error) {
 					//cout << "Change weight" << endl;
 					OL->SaveWeights();
 					HL[0]->SaveWeights();
@@ -85,7 +86,7 @@ public:
 				}
 			}
 			else 
-				if (someRes[0] - correctValue > Error) {
+				if (correctValue - someRes[0] > Error) {
 					//cout << "Change weight" << endl;
 					OL->SaveWeights();
 					HL[0]->SaveWeights();

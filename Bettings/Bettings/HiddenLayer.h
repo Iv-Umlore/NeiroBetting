@@ -23,6 +23,7 @@ public:
 	}
 	// считать веса, из файлика считывает текущие рабочие веса 
 	void ReadWeights() {
+		if (neirons != nullptr) delete[] neirons;
 		neirons = new Neiron*[neironsSize];
 		std::ifstream in(_way);
 		vector<double> weights;
@@ -40,20 +41,25 @@ public:
 		in.close();
 	}
 
+	vector<double> Srednee(vector<vector<double> > that) {
+		double tmp = 0.0;
+		vector<double> res;
+		for (int i = 0; i < that[0].size(); i++) {
+			for (int j = 0; j < that.size(); j++)
+				tmp += that[j][i];
+			res.push_back(tmp / that.size());
+			tmp = 0.0;
+		}
+		return res;
+	}
+
 	vector<double> Lerning(vector<double> changes) {
 		ReadWeights();
+		//PrintVector(changes, "Vector from HL");
 		vector<vector<double> > tmp;
 		for (int i = 0; i < neironsSize; i++)
 			tmp.push_back(neirons[i]->Lerning(changes[i]));
-		vector<double> res;
-		res = tmp[0];
-		for (int i = 1; i < tmp.size(); i++) {
-			for (int j = 0; j < res.size(); j++)
-				res[j] = res[j] + tmp[i][j];
-		}
-		for (int j = 0; j < res.size(); j++)
-			res[j] = res[j] / tmp.size();
-		return res;
+		return (Srednee(tmp));
 	}
 
 	void SaveWeights() {
