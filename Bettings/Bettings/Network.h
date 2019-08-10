@@ -3,6 +3,7 @@
 #include "InputLayer.h"
 #include "OutputLayer.h"
 #include "HiddenLayer.h"
+#include "Match.h"
 
 // Необходимо допиливать 100%
 void ShowResult(vector<double> vect) {
@@ -15,9 +16,12 @@ private:
 	OutputLayer* OL;	// Выходной слой
 	HiddenLayer** HL;	// Массив внутренних слоёв
 	vector<double> someRes;
+	
 public:
 	int goodValue;
 	int numberofErrors;
+	int tests;
+	const bool isSingle = false;
 
 	Network() {
 		IL = new InputLayer();
@@ -27,78 +31,141 @@ public:
 		way = "D:\\PROGRAMS\\NeiroBetting\\Bettings\\Debug\\second_weight.txt";
 		HL[1] = new HiddenLayer(4, way);
 		OL = new OutputLayer(4);
-		numberofErrors = 0;
-		goodValue = 0;
+		numberofErrors = 0;			// tests in [-0.3, 0.3]
+		goodValue = 0;				// tests in [-0.4, 0.4]
+		tests = 0;					// tests out [-0.1 , 0.1]
 	}
 	// Подсчёт результатов
 	void Vanga(vector<double> LastMatchResults) {
 				
 		someRes = IL->GetResultVector(LastMatchResults);
-		
-		//PrintVector(someRes, "Vanga");		
-		
-		someRes = HL[0]->GetResultVector(someRes);
-
-		//PrintVector(someRes, "Vanga");		
-		
-		someRes = HL[1]->GetResultVector(someRes);
-
-		//PrintVector(someRes, "Vanga");
-		
+		someRes = HL[0]->GetResultVector(someRes);	
+		someRes = HL[1]->GetResultVector(someRes);		
 		someRes = OL->GetResultVector(someRes);
 
-		//ShowResult(someRes);
+		if (isSingle) ShowResult(someRes);
 	}
+		
+	double CountTheError(Match matches) {
+		
+		double Error;
+			
+			Vanga(matches.lastResults);			// Прогоняем тест
 
-	// Умножение вектора на число со звёздочкой
-	void ChangeWeights(vector<double> & tmp, double mult) {
-		double summ = 0;
-		for (int i = 0; i < tmp.size(); i++)
-			summ += tmp[i];	// звёздочка, умножение идёт пропорционально
-		for (int i = 0; i < tmp.size(); i++) {
-			tmp[i] = (tmp[i] / summ) * mult;			// считаю
-		}
-	}
-	// Обучение.
-	void VangaLerning(vector<double> test, double correctValue, double learningspeed = 0.01) {
-		//cout << endl << "Good Result: " << correctValue << endl;
-		Vanga(test);	// Прогоняем тест
-		double Error = correctValue - someRes[0];
-		double change;
-		//cout << "This Error: " << Error << endl;
-		if (Error > 0.05 || Error < -0.05) {
-			change = Error * learningspeed;
-			vector<double> tmp = OL->Lerning(change);				// Выполняем обучение
-			//ChangeWeights(change, -learningspeed * Error);
-			tmp = HL[1]->Lerning(tmp);			// Выполняем обучение
-			//ChangeWeights(change, -learningspeed * Error);
-			tmp = HL[0]->Lerning(tmp);			// Выполняем обучение
-
-			Vanga(test);							// прогоняем ещё раз, проверяем, уменьшилась ли ошибка
-			if (correctValue - someRes[0] < 0.3 && correctValue - someRes[0] > -0.3) numberofErrors++;
-			if (someRes[0] < 1 && someRes[0] > -1) goodValue++;
-			if (Error > 0) {
-				if (correctValue - someRes[0] < Error) {
-					//cout << "Change weight" << endl;
-					OL->SaveWeights();
-					HL[0]->SaveWeights();
-					HL[1]->SaveWeights();
-				}
+			Error = someRes[0] - matches.CorrectResult;
+			
+			if (isSingle) {
+				cout << endl << "Good Result: " << matches.CorrectResult << endl;
+				cout << "This Error: " << Error << endl;
 			}
-			else 
-				if (correctValue - someRes[0] > Error) {
-					//cout << "Change weight" << endl;
-					OL->SaveWeights();
-					HL[0]->SaveWeights();
-					HL[1]->SaveWeights();
-				}
+			
+		return Error;		
+	}
+
+	void VangaLerning(vector<Match> AllMathes, int numberOfHellCircle) {
+		
+		int bestCircle = 0;
+		int circle = 0;
+		double firstError;
+		double secondError;
+		double ERROR = 0.0;
+		double bestErr = 0.0;
+		double lastSumm = 100000.0;
+		ReadWeight();
+		for (int i = 0; i < AllMathes.size(); i++) {
+			firstError = CountTheError(AllMathes[i]);
+			ERROR += firstError * firstError;
 		}
+		cout << endl << ERROR << endl << endl;
+		double summM = 0.0;
+		double summ = 0.0;
+
+		for (int k = 0; k < numberOfHellCircle; k++) {			
+				
+				tests = 0;
+				
+				for (int i = 0; i < AllMathes.size(); i++) {
+
+					firstError = CountTheError(AllMathes[i]);
+					Learning(firstError);				
+					
+				}
+				for (int i = 0; i < AllMathes.size(); i++) {
+					secondError = CountTheError(AllMathes[i]);
+					if (secondError * secondError <= 0.01) tests++;
+					summ += secondError * secondError;
+				}
+
+				if (summ < ERROR) {	
+					cout << summ << endl;
+					ERROR = summ;
+					bestCircle = k;
+					SaveWeight();
+					circle = 0;
+					
+				}
+				if (lastSumm > summ) {
+					bestErr = summ;
+					circle = 0;
+				}
+				else circle++;
+				lastSumm = summ;
+
+				if (circle > 500) {
+					srand(time(0));
+					ReadWeight();
+					cout <<"Best res: " << bestErr << " Last value: " << lastSumm << " Circle: " << k << endl;
+					lastSumm = 250.0;
+					ChangeWeights();
+					circle = 0;
+				}
+
+				summ = 0;
+			}
+		cout << lastSumm << endl;
+		cout << "BEST OF THE BEST\n\n\n";
+		cout << "ERROR: " << ERROR << " On Circle: " << bestCircle << endl;
+		cout << "Total good tests: " << tests << endl;
+	}
+
+	// Обучение.
+	void Learning(double error) {
+
+		vector<double> tmp = OL->Lerning(error);	// Выполняем обучение
+		tmp = HL[1]->Lerning(tmp);					// Выполняем обучение
+		tmp = HL[0]->Lerning(tmp);					// Выполняем обучение
+	}
+
+	void ReadWeight() {
+		OL->ReadWeights();
+		HL[1]->ReadWeights();
+		HL[0]->ReadWeights();
+	}
+	
+	void SaveWeight() {
+		if (isSingle) cout << "Change weight" << endl;
+		OL->SaveWeights();
+		HL[0]->SaveWeights();
+		HL[1]->SaveWeights();
+	}
+
+	void ChangeWeights() {
+		OL->ChangeWeights();
+		HL[0]->ChangeWeights();
+		HL[1]->ChangeWeights();
+		cout << "\nChanged!\n";
+	}
+
+	void SpecialSave() {
+		OL->SSaveWeights();
+		HL[0]->SSaveWeights();
+		HL[1]->SSaveWeights();
 	}
 
 	double GetPrediction() {
 		return someRes[0];
 	}
-
+	
 	~Network() {
 		IL->~InputLayer();
 		delete IL;

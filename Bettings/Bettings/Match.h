@@ -2,11 +2,29 @@
 
 #include <fstream>
 
+double GetAlternateMatchRate(int balls1, int balls2) {
+	double tmp = (balls1 - balls2);
+	if (balls1 == balls2) {
+		return -(balls1 * 0.01);
+	}
+
+	if (balls1 > balls2) {
+		return (tmp / 10) - (balls2+1) * 0.01;
+	}
+
+	if (balls1 < balls2) {
+		return (tmp / 10) - (balls1+1) * 0.01;
+	}
+
+	return 0;
+}
+
+
 double GetMatchRate(int balls1, int balls2) {
 	double startValue = 0.91;	// попытка сделать мат.последовательность с пределом 0,5
 	double startResult = 0;	// Ќу или почти 0,5
 	int denominator = 5;		// Ќа это число делитс€ startValue
-
+	double multyply = (balls1 + balls2);
 	if (balls1 == balls2) {
 		return (GetMatchRate(balls1, balls2 - 1) + GetMatchRate(balls1, balls2 + 1)) / 2;
 	}
@@ -26,20 +44,22 @@ double GetMatchRate(int balls1, int balls2) {
 }
 
 void PrintMatchPrediction(double answer) {
+	cout << answer << endl;
 	int ball1 = 0, ball2 = 0;
 	double min = 1.0;
 	double tmp;
 	for (int i = 0; i < 10; i++)
 		for (int j = 0; j < 10; j++) {
-			tmp = GetMatchRate(i, j);
-			tmp = answer - tmp;
-			if (tmp < 0) tmp *= -1;
+			//tmp = GetMatchRate(i, j);
+			tmp = GetAlternateMatchRate(i, j);
+			tmp = (answer - tmp) * (answer - tmp);
+			
 			if (tmp < min) {
 				min = tmp;
 				ball1 = i;
 				ball2 = j;
 			}
-		}
+		}	
 	cout << "I think, that score will be : " << ball1 << " : " << ball2 << endl;
 }
 
@@ -51,26 +71,61 @@ public:
 	Match() {};
 	Match(ifstream & in) {
 		int firstball, secondball;
-		//cout << "Introduced accounts of the last 5 matches of the team 1" << endl;
 		for (int i = 0; i < 5; i++) {
 			in >> firstball >> secondball;
-			//cout << firstball << " " << secondball << endl;
 			lastResults.push_back(GetMatchRate(firstball, secondball));
 		}
 
-		//cout << "Introduced accounts of the last 5 matches of the team 2" << endl;
 		for (int i = 0; i < 5; i++) {
 			in >> firstball >> secondball;
-			//cout << firstball << " " << secondball << endl;
 			lastResults.push_back(GetMatchRate(firstball, secondball));
 		}
-		//in.close();
-		/*for (int i = 0; i < 10; i++)
-			cout << "Nubmer of parameter: " << i << " Result - " << lastResults[i] << endl;*/
+
 	}
 
 	void SetMatchResult(int balls1, int balls2) {
-		CorrectResult = GetMatchRate(balls1, balls2);
+		//CorrectResult = GetMatchRate(balls1, balls2);
+		CorrectResult = GetAlternateMatchRate(balls1, balls2);
 	}
 
 };
+
+vector<Match> ReadAllMatches() {
+	vector<Match> matches;
+	string way = "D:\\PROGRAMS\\NeiroBetting\\Bettings\\USA.txt";
+	ifstream in(way);
+	int count;
+	int MatchCount;
+	int balls1, balls2;
+	in >> count;
+	for (int i = 0; i < count; i++) {
+		matches.push_back(Match(in));
+		in >> balls1 >> balls2;
+		matches[i].SetMatchResult(balls1, balls2);
+	}
+	in.close();
+
+	way = "D:\\PROGRAMS\\NeiroBetting\\Bettings\\Asia.txt";
+	in.open(way);
+	in >> count;
+	MatchCount = matches.size();
+	for (int i = MatchCount; i < count + MatchCount; i++) {
+		matches.push_back(Match(in));
+		in >> balls1 >> balls2;
+		matches[i].SetMatchResult(balls1, balls2);
+	}
+	in.close();
+
+	way = "D:\\PROGRAMS\\NeiroBetting\\Bettings\\Russia.txt";
+	in.open(way);
+	in >> count;
+	MatchCount = matches.size();
+	for (int i = MatchCount; i < count + MatchCount; i++) {
+		matches.push_back(Match(in));
+		in >> balls1 >> balls2;
+		matches[i].SetMatchResult(balls1, balls2);
+	}
+	in.close();
+
+	return matches;
+}
