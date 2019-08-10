@@ -32,14 +32,14 @@ int main() {
 		int count;
 		cout << "Circle count?\n";
 		cin >> count;
-		NW.VangaLerning(matches, count); /*matches[i].lastResults, matches[i].CorrectResult*/	// пїЅпїЅпїЅпїЅ
+		NW.VangaLerning(matches, count); /*matches[i].lastResults, matches[i].CorrectResult*/	// учим
 
 	}
 	else if (answer == 'P') {
 		way = "D:\\PROGRAMS\\NeiroBetting\\Bettings\\results.txt";
 		ifstream in(way);
 		Match testMatch(in);
-		NW.Vanga(testMatch.lastResults);		// пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+		NW.Vanga(testMatch.lastResults);		// просим результат
 		PrintMatchPrediction(NW.GetPrediction());
 	}
 	else cout << "Sorry, u write full trash!" << endl;	
