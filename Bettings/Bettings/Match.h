@@ -116,6 +116,17 @@ vector<Match> ReadAllMatches() {
 	}
 	in.close();
 
+	way = "D:\\PROGRAMS\\NeiroBetting\\Bettings\\Other.txt";
+	in.open(way);
+	in >> count;
+	MatchCount = matches.size();
+	for (int i = MatchCount; i < count + MatchCount; i++) {
+		matches.push_back(Match(in));
+		in >> balls1 >> balls2;
+		matches[i].SetMatchResult(balls1, balls2);
+	}
+	in.close();
+
 	way = "D:\\PROGRAMS\\NeiroBetting\\Bettings\\Russia.txt";
 	in.open(way);
 	in >> count;
