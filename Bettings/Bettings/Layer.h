@@ -7,5 +7,5 @@ protected:
 	vector<double> _result;
 public:
 	virtual vector<double> GetResultVector() { return _result; };
-	virtual void Lerning() {};
+	virtual void Lerning() {};	
 };

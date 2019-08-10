@@ -4,10 +4,16 @@
 #include <string>
 #include <algorithm>
 #include <iostream>
+#include <math.h>
+#include <random>
+#include <ctime>
 
 using namespace std;
 
 enum NeironType {classic, special};
+
+const double learningspeed = 0.01;
+const int coefficient = 5;
 
 void PrintVector(vector<double> vect, string from) {
 	cout << endl << from << ":\n";
@@ -21,6 +27,18 @@ class Neiron {
 private:
 	NeironType NT;	// NeironType
 	vector<double> _weight;
+	double myResult;
+
+	double SigmaFunction(double x) {
+		return 2 / (1 + exp( -coefficient * x )) - 1;
+	}
+
+	double Derivative(double x) {
+		double tmp = exp(-coefficient * x);
+		tmp = (2 * coefficient * tmp) / (pow((1 + tmp), 2));
+		return tmp;
+	}
+
 public:
 	Neiron(vector<double> weight, NeironType type = classic) {
 		_weight = weight;
@@ -33,7 +51,8 @@ public:
 			for (int i = 0; i < value.size(); i++) {
 				result += value[i] * _weight[i];
 			}
-			return result;
+			myResult = SigmaFunction(result);
+			return myResult;
 		}
 		else {
 			vector<double> firstTeam;
@@ -52,27 +71,27 @@ public:
 			for (int i = 0; i < value.size(); i++) {
 				result += value[i] * _weight[i];
 			}
-			return result;
+			myResult = SigmaFunction(result);
+			return myResult;
 		}
 	}
+	
 	// Обучение, необходима доработка
-	vector<double> Lerning(double error) {
+	vector<double> Lerning(double error , vector<double> output) {
 		vector<double> res;
-		//cout << "\nValue: " << error << endl;
-		//PrintVector(_weight, "begin Neiron");
-		for (int i = 0; i < _weight.size(); i++) {	
-			res.push_back(error / _weight[i]);
-			if (_weight[i] * _weight[i] < 0.000025 && _weight[i] * error > 0) _weight[i] = -_weight[i];
-			else
-				if (_weight[i] < 0)
-					_weight[i] -= _weight[i] * (error/2);
-				else _weight[i] += _weight[i] * (error / 2);
-			if (_weight[i] > 5.0) _weight[i] = 4.8;
-			if (_weight[i] < -5.0) _weight[i] = -4.8;	
+		double deltaW = Derivative(myResult) * error;
+		for (int i = 0; i < _weight.size(); i++) {			
+			_weight[i] -= output[i] * deltaW * learningspeed;						
+			res.push_back(_weight[i] * deltaW);
 		}
-		//PrintVector(_weight, "end Neiron");
+
 		return res;
 	};
+
+	void ChangeWeights() {	
+		for (int i = 0; i < _weight.size(); i++)
+			_weight[i] += (double)((rand() % 2001) - 1000) / 10000;
+	}
 
 	vector<double> GetWeight() {
 		return _weight;

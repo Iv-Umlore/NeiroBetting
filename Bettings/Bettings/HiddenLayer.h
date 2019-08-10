@@ -12,6 +12,7 @@ private:
 	string _way;
 	int _LastLevelSize;
 	bool ISspesical;
+	vector<double> output;
 public:
 
 	HiddenLayer(int levelsize ,string way, bool spesialHL = false) {
@@ -40,26 +41,24 @@ public:
 		}
 		in.close();
 	}
-
-	vector<double> Srednee(vector<vector<double> > that) {
-		double tmp = 0.0;
+	
+	vector<double> GetReturnVector(vector<vector<double> > vvd) {
 		vector<double> res;
-		for (int i = 0; i < that[0].size(); i++) {
-			for (int j = 0; j < that.size(); j++)
-				tmp += that[j][i];
-			res.push_back(tmp / that.size());
-			tmp = 0.0;
+		double summ = 0.0;
+		for (int i = 0; i < vvd[0].size(); i++) {
+			for (int j = 0; j < vvd.size(); j++)
+				summ += vvd[j][i];
+			res.push_back(summ);
+			summ = 0.0;
 		}
 		return res;
 	}
 
 	vector<double> Lerning(vector<double> changes) {
-		ReadWeights();
-		//PrintVector(changes, "Vector from HL");
-		vector<vector<double> > tmp;
-		for (int i = 0; i < neironsSize; i++)
-			tmp.push_back(neirons[i]->Lerning(changes[i]));
-		return (Srednee(tmp));
+		vector<vector<double> > result;
+		for (int i = 0; i < changes.size();i++)
+			result.push_back(neirons[i]->Lerning(changes[i], output));
+		return GetReturnVector(result);
 	}
 
 	void SaveWeights() {
@@ -76,7 +75,27 @@ public:
 		out.close();
 	}
 
+	void SSaveWeights() {
+		ofstream out(_way + ".txt");
+		vector<double> tmp;
+		for (int i = 0; i < neironsSize; i++) {
+			tmp = neirons[i]->GetWeight();
+			for (int j = 0; j < tmp.size(); j++)
+				if (j + 1 < tmp.size())
+					out << tmp[j] << " ";
+				else out << tmp[j];
+			out << endl;
+		}
+		out.close();
+	}
+
+	void ChangeWeights() {
+		for (int i = 0; i < neironsSize; i++)
+			neirons[i]->ChangeWeights();
+	}
+
 	vector<double> GetResultVector(vector<double> result) {
+		output = result;
 		_result.clear();
 		for (int i = 0; i < neironsSize; i++)
 			_result.push_back(neirons[i]->ActivationFunction(result));
