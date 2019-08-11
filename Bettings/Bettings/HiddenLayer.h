@@ -74,21 +74,7 @@ public:
 		}
 		out.close();
 	}
-
-	void SSaveWeights() {
-		ofstream out(_way + ".txt");
-		vector<double> tmp;
-		for (int i = 0; i < neironsSize; i++) {
-			tmp = neirons[i]->GetWeight();
-			for (int j = 0; j < tmp.size(); j++)
-				if (j + 1 < tmp.size())
-					out << tmp[j] << " ";
-				else out << tmp[j];
-			out << endl;
-		}
-		out.close();
-	}
-
+	
 	void ChangeWeights() {
 		for (int i = 0; i < neironsSize; i++)
 			neirons[i]->ChangeWeights();

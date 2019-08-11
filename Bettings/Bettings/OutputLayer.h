@@ -9,13 +9,14 @@ class OutputLayer : public Layer {
 private:
 	Neiron** neirons;
 	int neironsSize;
-	string way = "D:\\PROGRAMS\\NeiroBetting\\Bettings\\Debug\\output_weight.txt";
+	string way;
 	int _LastLevelSize;
 	vector<double> output;
 public:
 
-	OutputLayer(int levelsize) {
+	OutputLayer(int levelsize, string Oway) {
 		neironsSize = 2;
+		way = Oway;
 		_LastLevelSize = levelsize;
 		ReadWeights();
 	}
@@ -71,21 +72,7 @@ public:
 		}
 		out.close();
 	}
-
-	void SSaveWeights() {
-		ofstream out(way + ".txt");
-		vector<double> tmp;
-		for (int i = 0; i < neironsSize; i++) {
-			tmp = neirons[i]->GetWeight();
-			for (int j = 0; j < tmp.size(); j++)
-				if (j + 1 < tmp.size())
-					out << tmp[j] << " ";
-				else out << tmp[j];
-			out << endl;
-		}
-		out.close();
-	}
-
+	
 	void ChangeWeights() {
 			neirons[0]->ChangeWeights();
 	}
