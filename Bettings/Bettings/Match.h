@@ -106,9 +106,11 @@ vector<Match> ReadAllMatches() {
 	ways.push_back(_Others_);
 	ways.push_back(_Russia_);
 
+	ifstream in;
+
 	for (int i = 0; i < ways.size(); i++) {
 
-		ifstream in(ways[i]);
+		in.open(ways[i]);
 		int count;
 		int MatchCount;
 		int balls1, balls2;
