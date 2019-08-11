@@ -1,5 +1,11 @@
 #pragma once
 
+#define _Russia_ "D:\\PROGRAMS\\NeiroBetting\\Bettings\\Russia.txt"
+#define _Asia_ "D:\\PROGRAMS\\NeiroBetting\\Bettings\\Asia.txt"
+#define _USA_ "D:\\PROGRAMS\\NeiroBetting\\Bettings\\USA.txt"
+#define _Others_ "D:\\PROGRAMS\\NeiroBetting\\Bettings\\Other.txt"
+#define _MathForPrediction_ "D:\\PROGRAMS\\NeiroBetting\\Bettings\\results.txt"
+
 #include <fstream>
 
 double GetAlternateMatchRate(int balls1, int balls2) {
@@ -8,17 +14,20 @@ double GetAlternateMatchRate(int balls1, int balls2) {
 		return -(balls1 * 0.01);
 	}
 
+	double SmallBalls;
+
 	if (balls1 > balls2) {
-		return (tmp / 10) - (balls2+1) * 0.01;
+		SmallBalls = 0.1 / (9 - (balls1 - balls2) + 1);
+		return (tmp / 10) - balls2 * SmallBalls;
 	}
 
 	if (balls1 < balls2) {
-		return (tmp / 10) - (balls1+1) * 0.01;
+		SmallBalls = 0.1 / (9 - (balls2 - balls1) + 1);
+		return (tmp / 10) - balls1 * SmallBalls;;
 	}
 
 	return 0;
 }
-
 
 double GetMatchRate(int balls1, int balls2) {
 	double startValue = 0.91;	// попытка сделать мат.последовательность с пределом 0,5
@@ -50,7 +59,6 @@ void PrintMatchPrediction(double answer) {
 	double tmp;
 	for (int i = 0; i < 10; i++)
 		for (int j = 0; j < 10; j++) {
-			//tmp = GetMatchRate(i, j);
 			tmp = GetAlternateMatchRate(i, j);
 			tmp = (answer - tmp) * (answer - tmp);
 			
@@ -73,12 +81,12 @@ public:
 		int firstball, secondball;
 		for (int i = 0; i < 5; i++) {
 			in >> firstball >> secondball;
-			lastResults.push_back(GetMatchRate(firstball, secondball));
+			lastResults.push_back(GetAlternateMatchRate(firstball, secondball));
 		}
 
 		for (int i = 0; i < 5; i++) {
 			in >> firstball >> secondball;
-			lastResults.push_back(GetMatchRate(firstball, secondball));
+			lastResults.push_back(GetAlternateMatchRate(firstball, secondball));
 		}
 
 	}
@@ -92,51 +100,33 @@ public:
 
 vector<Match> ReadAllMatches() {
 	vector<Match> matches;
-	string way = "D:\\PROGRAMS\\NeiroBetting\\Bettings\\USA.txt";
-	ifstream in(way);
+	vector<string> ways;	
+
+	ways.push_back(_Others_);
+	ways.push_back(_Asia_);
+	ways.push_back(_USA_);
+	ways.push_back(_Russia_);	
+
+	ifstream in;
+
 	int count;
 	int MatchCount;
 	int balls1, balls2;
-	in >> count;
-	for (int i = 0; i < count; i++) {
-		matches.push_back(Match(in));
-		in >> balls1 >> balls2;
-		matches[i].SetMatchResult(balls1, balls2);
-	}
-	in.close();
+	int currPos = 0;
 
-	way = "D:\\PROGRAMS\\NeiroBetting\\Bettings\\Asia.txt";
-	in.open(way);
-	in >> count;
-	MatchCount = matches.size();
-	for (int i = MatchCount; i < count + MatchCount; i++) {
-		matches.push_back(Match(in));
-		in >> balls1 >> balls2;
-		matches[i].SetMatchResult(balls1, balls2);
-	}
-	in.close();
+	for (int j = 0; j < ways.size(); j++) {
 
-	way = "D:\\PROGRAMS\\NeiroBetting\\Bettings\\Other.txt";
-	in.open(way);
-	in >> count;
-	MatchCount = matches.size();
-	for (int i = MatchCount; i < count + MatchCount; i++) {
-		matches.push_back(Match(in));
-		in >> balls1 >> balls2;
-		matches[i].SetMatchResult(balls1, balls2);
+		in.open(ways[j]);
+		
+		in >> count;
+		for (int i = 0; i < count; i++) {
+			matches.push_back(Match(in));
+			in >> balls1 >> balls2;
+			matches[currPos].SetMatchResult(balls1, balls2);
+			currPos++;
+		}
+		in.close();
 	}
-	in.close();
-
-	way = "D:\\PROGRAMS\\NeiroBetting\\Bettings\\Russia.txt";
-	in.open(way);
-	in >> count;
-	MatchCount = matches.size();
-	for (int i = MatchCount; i < count + MatchCount; i++) {
-		matches.push_back(Match(in));
-		in >> balls1 >> balls2;
-		matches[i].SetMatchResult(balls1, balls2);
-	}
-	in.close();
-
+	
 	return matches;
 }

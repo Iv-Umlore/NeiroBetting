@@ -26,11 +26,9 @@ public:
 	Network() {
 		IL = new InputLayer();
 		HL = new HiddenLayer*[2];
-		string way = "D:\\PROGRAMS\\NeiroBetting\\Bettings\\Debug\\first_weight.txt";	
-		HL[0] = new HiddenLayer(10, way);
-		way = "D:\\PROGRAMS\\NeiroBetting\\Bettings\\Debug\\second_weight.txt";
-		HL[1] = new HiddenLayer(4, way);
-		OL = new OutputLayer(4);
+		HL[0] = new HiddenLayer(10, _FirstWeight_);
+		HL[1] = new HiddenLayer(4, _SecondWeight_);
+		OL = new OutputLayer(4, _OutputWeight_);
 		numberofErrors = 0;			// tests in [-0.3, 0.3]
 		goodValue = 0;				// tests in [-0.4, 0.4]
 		tests = 0;					// tests out [-0.1 , 0.1]
@@ -50,14 +48,14 @@ public:
 		
 		double Error;
 			
-			Vanga(matches.lastResults);			// Прогоняем тест
+		Vanga(matches.lastResults);			// Прогоняем тест
 
-			Error = someRes[0] - matches.CorrectResult;
+		Error = someRes[0] - matches.CorrectResult;
 			
-			if (isSingle) {
-				cout << endl << "Good Result: " << matches.CorrectResult << endl;
-				cout << "This Error: " << Error << endl;
-			}
+		if (isSingle) {
+			cout << endl << "Good Result: " << matches.CorrectResult << endl;
+			cout << "This Error: " << Error << endl;
+		}
 			
 		return Error;		
 	}
@@ -72,14 +70,14 @@ public:
 		double bestErr = 0.0;
 		double lastSumm = 100000.0;
 		ReadWeight();
+
 		for (int i = 0; i < AllMathes.size(); i++) {
 			firstError = CountTheError(AllMathes[i]);
 			ERROR += firstError * firstError;
 		}
 		cout << endl << ERROR << endl << endl;
-		double summM = 0.0;
-		double summ = 0.0;
 
+		double summ = 0.0;
 		for (int k = 0; k < numberOfHellCircle; k++) {			
 				
 				tests = 0;
@@ -155,13 +153,7 @@ public:
 		HL[1]->ChangeWeights();
 		cout << "\nChanged!\n";
 	}
-
-	void SpecialSave() {
-		OL->SSaveWeights();
-		HL[0]->SSaveWeights();
-		HL[1]->SSaveWeights();
-	}
-
+	
 	double GetPrediction() {
 		return someRes[0];
 	}
