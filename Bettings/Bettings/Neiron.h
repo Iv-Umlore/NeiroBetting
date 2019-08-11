@@ -13,7 +13,7 @@ using namespace std;
 enum NeironType {classic, special};
 
 const double learningspeed = 0.01;
-const int coefficient = 5;
+const int coefficient = 2;
 
 void PrintVector(vector<double> vect, string from) {
 	cout << endl << from << ":\n";

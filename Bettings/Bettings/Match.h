@@ -6,10 +6,6 @@
 #define _Others_ "D:\\PROGRAMS\\NeiroBetting\\Bettings\\Other.txt"
 #define _MathForPrediction_ "D:\\PROGRAMS\\NeiroBetting\\Bettings\\results.txt"
 
-#define _FirstWeight_ "D:\\PROGRAMS\\NeiroBetting\\Bettings\\Debug\\first_weight.txt"
-#define _SecondWeight_ "D:\\PROGRAMS\\NeiroBetting\\Bettings\\Debug\\second_weight.txt"
-#define _OutputWeight_ "D:\\PROGRAMS\\NeiroBetting\\Bettings\\Debug\\output_weight.txt"
-
 #include <fstream>
 
 double GetAlternateMatchRate(int balls1, int balls2) {
@@ -18,12 +14,16 @@ double GetAlternateMatchRate(int balls1, int balls2) {
 		return -(balls1 * 0.01);
 	}
 
+	double SmallBalls;
+
 	if (balls1 > balls2) {
-		return (tmp / 10) - (balls2+1) * 0.01;
+		SmallBalls = 0.1 / (9 - (balls1 - balls2) + 1);
+		return (tmp / 10) - balls2 * SmallBalls;
 	}
 
 	if (balls1 < balls2) {
-		return (tmp / 10) - (balls1+1) * 0.01;
+		SmallBalls = 0.1 / (9 - (balls2 - balls1) + 1);
+		return (tmp / 10) - balls1 * SmallBalls;;
 	}
 
 	return 0;
@@ -81,12 +81,12 @@ public:
 		int firstball, secondball;
 		for (int i = 0; i < 5; i++) {
 			in >> firstball >> secondball;
-			lastResults.push_back(GetMatchRate(firstball, secondball));
+			lastResults.push_back(GetAlternateMatchRate(firstball, secondball));
 		}
 
 		for (int i = 0; i < 5; i++) {
 			in >> firstball >> secondball;
-			lastResults.push_back(GetMatchRate(firstball, secondball));
+			lastResults.push_back(GetAlternateMatchRate(firstball, secondball));
 		}
 
 	}
@@ -100,25 +100,30 @@ public:
 
 vector<Match> ReadAllMatches() {
 	vector<Match> matches;
-	vector<string> ways;
-	ways.push_back(_USA_);
-	ways.push_back(_Asia_);
+	vector<string> ways;	
+
 	ways.push_back(_Others_);
-	ways.push_back(_Russia_);
+	ways.push_back(_Asia_);
+	ways.push_back(_USA_);
+	ways.push_back(_Russia_);	
 
 	ifstream in;
 
-	for (int i = 0; i < ways.size(); i++) {
+	int count;
+	int MatchCount;
+	int balls1, balls2;
+	int currPos = 0;
 
-		in.open(ways[i]);
-		int count;
-		int MatchCount;
-		int balls1, balls2;
+	for (int j = 0; j < ways.size(); j++) {
+
+		in.open(ways[j]);
+		
 		in >> count;
 		for (int i = 0; i < count; i++) {
 			matches.push_back(Match(in));
 			in >> balls1 >> balls2;
-			matches[i].SetMatchResult(balls1, balls2);
+			matches[currPos].SetMatchResult(balls1, balls2);
+			currPos++;
 		}
 		in.close();
 	}
