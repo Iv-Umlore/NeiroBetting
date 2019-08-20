@@ -3,6 +3,7 @@
 #define _Russia_ "D:\\PROGRAMS\\NeiroBetting\\Bettings\\Russia.txt"
 #define _Asia_ "D:\\PROGRAMS\\NeiroBetting\\Bettings\\Asia.txt"
 #define _USA_ "D:\\PROGRAMS\\NeiroBetting\\Bettings\\USA.txt"
+#define _Europe_ "D:\\PROGRAMS\\NeiroBetting\\Bettings\\Euro.txt"
 #define _Others_ "D:\\PROGRAMS\\NeiroBetting\\Bettings\\Other.txt"
 #define _MathForPrediction_ "D:\\PROGRAMS\\NeiroBetting\\Bettings\\results.txt"
 
@@ -105,7 +106,8 @@ vector<Match> ReadAllMatches() {
 	ways.push_back(_Others_);
 	ways.push_back(_Asia_);
 	ways.push_back(_USA_);
-	ways.push_back(_Russia_);	
+	ways.push_back(_Russia_);
+	ways.push_back(_Europe_);
 
 	ifstream in;
 
